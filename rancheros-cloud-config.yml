@@ -6,9 +6,13 @@
 write_files:
   - path: /etc/rc.local
     permissions: "0755"
+    owner: root 
     content: |
       #!/bin/bash
       [ ! -e /usr/bin/docker ] && ln -s /usr/bin/docker.dist /usr/bin/docker
+      mkdir -p /mnt/nfs-1                                                      
+      mkdir -p /mnt/nfs-2                                                      
+      cloud-init-execute
 
 rancher:
   services:
@@ -22,7 +26,7 @@ rancher:
       restart: always
       volumes:
       - /usr/bin/iptables:/sbin/iptables:ro
-      - /mnt/nfs-1:/mnt/nfs-1:shared
-      environment:
-        SERVER: X.X.X.X
-        SHARE: /shared_path
+        
+mounts:                                                                        
+- ["nfs_server_ip:/", "/mnt/nfs-1", "nfs4", ""]                                 
+- ["nfs_server_ip:/", "/mnt/nfs-2", "nfs4", ""]
